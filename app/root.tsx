@@ -7,7 +7,9 @@ import {
   Scripts,
   ScrollRestoration,
 } from "@remix-run/react";
+import { createPortal } from "react-dom";
 import { createHead } from "remix-island";
+import { ClientOnly } from "remix-utils";
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
@@ -15,17 +17,19 @@ export const meta: MetaFunction = () => ({
   viewport: "width=device-width,initial-scale=1",
 });
 
-export const Head = createHead(() => (
-  <>
-    <Meta />
-    <Links />
-  </>
-));
+export function Head() {
+  return (
+    <>
+      <Meta />
+      <Links />
+    </>
+  );
+}
 
 export default function App() {
   return (
     <>
-      <Head />
+      <ClientOnly>{() => createPortal(<Head />, document.head)}</ClientOnly>
       <Outlet />
       <ScrollRestoration />
       <Scripts />

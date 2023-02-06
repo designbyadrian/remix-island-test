@@ -4,13 +4,25 @@ import { hydrateRoot } from "react-dom/client";
 
 function hydrate() {
   startTransition(() => {
-    hydrateRoot(
-      document.getElementById("root")!,
-      <StrictMode>
-        <RemixBrowser />
-      </StrictMode>
+    // @ts-expect-error
+    hydrateRoot(document.getElementById("root"), <RemixApp />);
+    // since <Head> is wrapped in <ClientOnly> it will
+    // not render until after hydration
+    // so we need to remove the server rendered head
+    // in preparation for the client side render
+    document.head.innerHTML = document.head.innerHTML.replace(
+      /<!--start head-->.+<!--end head-->/,
+      ""
     );
   });
+}
+
+function RemixApp() {
+  return (
+    <StrictMode>
+      <RemixBrowser />
+    </StrictMode>
+  );
 }
 
 if (typeof requestIdleCallback === "function") {
